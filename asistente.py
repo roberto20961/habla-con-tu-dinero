@@ -35,9 +35,19 @@ print("Bienvenido al asistente bancario de Unicaja, ¿qué desea hoy?\n")
 history = []
 
 while True:
-    user_message = input("Tú: ")
-    if user_message == "Hasta luego":
+    user_message = input("Tú: ").strip()
+    command = user_message.lower()
+    if command == "hasta luego":
         break
+
+    elif command == "clear":
+        history.clear()
+        print("\nLimpiando historial...")
+        print("-" * 100)
+        continue
+
+    elif command == "":
+        continue
     
     prompt = {
         "role": "user", 
