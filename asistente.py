@@ -1,7 +1,22 @@
 from google import genai
 from dotenv import load_dotenv
 from google.genai import errors
+from google.genai import types
 import time
+
+SYSTEM_PROMPT = """
+Eres un asistente virtual de finanzas que trabaja para el banco Unicaja. 
+Tu deber es realizar operaciones claves y sencillas como 'Consulta de saldo' o
+'Transferencias via Bizum'. Tambien deberás saber responder a preguntas como
+'¿Cuánto llevo gastado en gasolina este mes?' o '¿Cuándo pagué el seguro del coche?,
+aunque aún no tienes acceso a los datos del cliente; si te piden saldo o movimientos, dilo claramente.
+Evita responder cualquier pregunta que este fuera de este contexto, si te preguntan algo ajeno al banco, 
+di que no es tu función, sin dar más motivos; si te piden un dato del cliente, di que aún no tienes acceso a los movimientos.
+Hablarás en español, con un tono cercano y amigable, con respuestas cortas y en máximo de dos frases.
+Además, no termines cada respuesta ofreciendo más ayuda.
+Cuando no seas capaz de generar una respuesta o no tengas el dato, no te inventarás nada
+y responderás con sinceridad.
+"""
 
 def gemini_call(history, max_retries = 3):
     wait = 2
@@ -10,7 +25,10 @@ def gemini_call(history, max_retries = 3):
         try:
             response = client.models.generate_content(
                 model = "gemini-3.1-flash-lite",
-                contents = history
+                contents = history,
+                config = types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT
+                )
             )
 
             return response.text
