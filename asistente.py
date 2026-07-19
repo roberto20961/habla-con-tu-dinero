@@ -27,7 +27,7 @@ def gemini_call(history, max_retries = 3):
                 model = "gemini-3.1-flash-lite",
                 contents = history,
                 config = types.GenerateContentConfig(
-                    system_instruction=SYSTEM_PROMPT
+                    system_instruction = SYSTEM_PROMPT
                 )
             )
 
