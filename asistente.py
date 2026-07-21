@@ -18,6 +18,7 @@ Cuando no seas capaz de generar una respuesta o no tengas el dato, no te inventa
 y responderás con sinceridad.
 """
 
+# Allows making Gemini calls with history and exponential backoff
 def gemini_call(history, max_retries = 3):
     wait = 2
 
@@ -36,7 +37,8 @@ def gemini_call(history, max_retries = 3):
         except errors.APIError as e:
             if e.code not in {503, 429}:
                 raise
-
+            
+            # Exponential backoff if the error is due to server overload
             if i < max_retries - 1:
                 print(f"Reintento {i + 1}, esperando {wait} segundos...")
                 time.sleep(wait)
@@ -58,6 +60,7 @@ while True:
     if command == "hasta luego":
         break
 
+    # To delete the memory of the chatbot, introduce 'clear' in the chat
     elif command == "clear":
         history.clear()
         print("\nLimpiando historial...")
@@ -74,6 +77,7 @@ while True:
 
     response = gemini_call(history + [prompt])
 
+    # If the server is overloaded and has not responded, the user should try again
     if response is None:
         print("Servidor saturado... Intente nuevamente en unos instantes.")
         print("-" * 100)

@@ -28,6 +28,7 @@ Reglas:
 Donaciones, Educación, Ropa y calzado, Electrónica y Electrodomésticos, Otros, Ingresos.
 """
 
+# Allows making Gemini calls with exponential backoff
 def gemini_call(prompt, max_retries = 3):
     wait = 2
 
@@ -47,6 +48,7 @@ def gemini_call(prompt, max_retries = 3):
             if e.code not in {503, 429}:
                 raise
 
+            # Exponential backoff if the error is due to server overload
             if i < max_retries - 1:
                 print(f"Reintento {i + 1}, esperando {wait} segundos...")
                 time.sleep(wait)
@@ -57,8 +59,8 @@ def gemini_call(prompt, max_retries = 3):
 connection = sqlite3.connect("movimientos.db")
 cursor = connection.cursor()
 
+# Data base creation
 cursor.execute("""
-
     CREATE TABLE IF NOT EXISTS transaccion(
         id INTEGER PRIMARY KEY,
         fecha TEXT CHECK(fecha LIKE '____-__-__'),
@@ -68,7 +70,6 @@ cursor.execute("""
                                            'Transporte', 'Hogar', 'Donaciones', 'Educación', 'Ropa y calzado', 
                                            'Electrónica y Electrodomésticos', 'Otros', 'Ingresos'))
     )
-
 """)
 
 load_dotenv()
@@ -82,8 +83,9 @@ if db_response is None:
 
 else:
     cursor.execute("DELETE FROM transaccion")
-    data = json.loads(db_response)
+    data = json.loads(db_response) # Convert from 'string' to Python 'json'
     
+    # Adding the transactions that the LLM created
     for t in data:
         cursor.execute("INSERT INTO transaccion (fecha, importe, concepto, categoria) VALUES (?, ?, ?, ?)",
                        (t["fecha"], t["importe"], t["concepto"], t["categoria"]))
