@@ -52,9 +52,12 @@ nada de texto adicional, sin bloques de markdown, sin ```.
 
 ANSWER_PROMPT = """
 Tu tarea es convertir el resultado de una consulta a una base de datos en una respuesta legible para el usuario.
-Responderás en español, de forma breve en una sola frase siempre que se pueda, sin mucha decoración, con formato de moneda en euros y tono cercano.
+Responderás en español, de forma breve en una sola frase siempre que se pueda, sin mucha decoración, 
+con formato de moneda en euros y tono cercano.
 Si el resultado está vacío o es None, dilo con naturalidad (por ejemplo: "No encontré gastos de gasolina ayer").\n
 """
+
+#************************************************************************************************************************
 
 # Allows making Gemini calls with history or simple prompt, system instructions and exponential backoff
 def gemini_call(prompt, system_prompt = None, max_retries = 3):
@@ -98,7 +101,7 @@ def valid_query(query):
     query = query.lower()
     return query.startswith("select") and query.rstrip(";").count(";") == 0
 
-#**********************************************************************************************************************
+#************************************************************************************************************************
 
 load_dotenv()
 
@@ -111,16 +114,18 @@ connection = sqlite3.connect("file:movimientos.db?mode=ro", uri = True)
 cursor = connection.cursor()
 
 history = []
+history_sql = []
 
 while True:
-    prompt = input("Tú: ").strip()
-    command = prompt.lower()
+    user_msg = input("Tú: ").strip()
+    command = user_msg.lower()
     if command == "hasta luego":
         break
 
     # To delete the memory of the chatbot, introduce 'clear' in the chat
     elif command == "clear":
         history.clear()
+        history_sql.clear()
         print("\nLimpiando historial...")
         print("-" * 100)
         continue
@@ -128,10 +133,33 @@ while True:
     elif command == "":
         continue
     
-    classification = classify(prompt).strip()
+    classification = classify(user_msg)
+
+    # If the server is overloaded and has not responded, the user should try again
+    if classification is None:
+        print("Servidor saturado... Intente nuevamente en unos instantes.")
+        print("-" * 100)
+        continue
+
+    classification = classification.strip()
+
+    prompt = {
+        "role": "user", 
+        "parts": [{"text": user_msg}]
+    }
 
     if(classification == "Consulta"):
-        query = sql_translate(prompt).strip()
+        query = sql_translate(history_sql + [prompt])
+
+        # If the server is overloaded and has not responded, the user should try again
+        if query is None:
+            print("Servidor saturado... Intente nuevamente en unos instantes.")
+            print("-" * 100)
+            continue
+        
+        print(f"[SQL] {query}")
+
+        query = query.strip()
         
         if not valid_query(query):
             response = "Consulta no válida, inténtelo de nuevo."
@@ -141,23 +169,31 @@ while True:
                 result = cursor.fetchall()
 
                 query_prompt = textwrap.dedent(f"""
-                    Pregunta del usuario: {prompt}
+                    Pregunta del usuario: {user_msg}
                     Consulta ejecutada: {query}
                     Resultado: {result}
                 """)
                 
-                response = query_translate(query_prompt)
+                response = query_translate(history_sql + [query_prompt])
+
+                # If the server is overloaded and has not responded, the user should try again
+                if response is None:
+                    print("Servidor saturado... Intente nuevamente en unos instantes.")
+                    print("-" * 100)
+                    continue
+
+                history_sql.append(prompt)
+
+                history_sql.append({
+                    "role": "model",
+                    "parts": [{"text": query}]
+                })
             
             except sqlite3.Error as e:
                 response = f"Error en la base de datos: {e} \n Por favor, vuelve a intentarlo..."
 
     else:
-        user_prompt = {
-            "role": "user", 
-            "parts": [{"text": prompt}]
-        }
-
-        response = gemini_call(history + [user_prompt], SYSTEM_PROMPT)
+        response = gemini_call(history + [prompt], SYSTEM_PROMPT)
 
         # If the server is overloaded and has not responded, the user should try again
         if response is None:
@@ -165,7 +201,7 @@ while True:
             print("-" * 100)
             continue
 
-        history.append(user_prompt)
+        history.append(prompt)
 
         history.append({
             "role": "model",
