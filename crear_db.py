@@ -83,9 +83,9 @@ if db_response is None:
 
 else:
     cursor.execute("DELETE FROM transaccion")
-    data = json.loads(db_response) # Convert from 'string' to Python 'json'
+    data = json.loads(db_response) # Convert from 'string json' to 'Python json'
     
-    # Adding the transactions that the LLM created
+    # Adding the LLM created transactions to the data base
     for t in data:
         cursor.execute("INSERT INTO transaccion (fecha, importe, concepto, categoria) VALUES (?, ?, ?, ?)",
                        (t["fecha"], t["importe"], t["concepto"], t["categoria"]))
