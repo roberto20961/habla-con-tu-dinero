@@ -13,6 +13,8 @@ Tu tarea es traducir la pregunta del usuario a una consulta SQL de SQLite.
 Únicamente vas a generar consultas SELECT.
 Mapea los términos del usuario a la categoría más adecuada de la lista, por ejemplo si la pregunta es 'Cuánto gasté
 en gasolina?', la categoría sería 'Transporte'.
+Si el usuario pregunta por conceptos que no son categorías (suscripciones, gasolina, farmacia...), filtra 
+por concepto LIKE en lugar de por categoría.
 El formato de salida que deberás darme es solo la consulta SQL, sin nada de texto adicional, sin bloques de markdown, sin ```.
 El esquema de la base de datos sobre la cuál vas a tener que crear la consulta es:
 CREATE TABLE IF NOT EXISTS transaccion(
@@ -24,7 +26,7 @@ categoria TEXT CHECK(categoria IN ('Ocio', 'Restaurantes', 'Supers e Hipers', 'S
 'Transporte', 'Hogar', 'Donaciones', 'Educación', 'Ropa y calzado', 
 'Electrónica y Electrodomésticos', 'Otros', 'Ingresos')))
 Como información adicional te digo que la fecha de hoy es {today}.
-"""
+""" 
 
 CLASSIFIER_PROMPT = """
 Tu tarea es leer el mensaje del usuario y clasificarlo únicamente en una de las dos siguientes categorías:
@@ -74,6 +76,9 @@ def classify(prompt):
 def sql_translate(prompt):
     return gemini_call(prompt, SQL_PROMPT)
 
+def query_translate(prompt):
+    return gemini_call(prompt, ANSWER_PROMPT)
+
 # Checks if the query is a SELECT and contains no more than one 
 def valid_query(query):
     query = query.lower()
@@ -115,7 +120,7 @@ while True:
                     Resultado: {result}
                 """)
                 
-                response = gemini_call(query_prompt, ANSWER_PROMPT)
+                response = query_translate(query_prompt)
             
             except sqlite3.Error as e:
                 response = "Error en la base de datos: {e} \n Por favor, vuelve a intentarlo..."
