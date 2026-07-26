@@ -7,7 +7,7 @@ from google.genai import types
 import time
 
 GENERATION_PROMPT = """
-Genera 200 transacciones bancarias realistas de un cliente español normal.
+Genera 400 transacciones bancarias realistas de un cliente español normal.
 
 Devuelve EXCLUSIVAMENTE un array JSON, sin texto antes ni después, sin markdown.
 El formato es una lista de objetos, cada uno con exactamente estos campos:
@@ -23,6 +23,8 @@ Reglas:
 - Los gastos son importes NEGATIVOS; los ingresos, POSITIVOS.
 - Solo un ingreso (nómina) por mes; el resto son gastos.
 - El concepto debe ser el nombre real de un comercio o entidad (ej. "MERCADONA", "NETFLIX", "ENDESA ENERGIA"), en mayúsculas.
+Nunca uses palabras genéricas como TAXI, CINE, LIBROS, RESTAURANTE, FARMACIA; usa siempre marcas concretas: CABIFY, CINESA, CASA DEL LIBRO...
+El mismo comercio debe escribirse siempre igual.
 - La categoría debe ser coherente con el concepto y el importe.
 - Usa SOLO estas categorías: Ocio, Restaurantes, Supers e Hipers, Salud, Bienestar y Belleza, Transporte, Hogar,
 Donaciones, Educación, Ropa y calzado, Electrónica y Electrodomésticos, Otros, Ingresos.
@@ -35,7 +37,7 @@ def gemini_call(prompt, max_retries = 3):
     for i in range(max_retries):
         try:
             response = client.models.generate_content(
-                model = "gemini-3.1-flash-lite",
+                model = "gemini-3.5-flash",
                 contents = prompt,
                 config = types.GenerateContentConfig(
                     response_mime_type = "application/json"
