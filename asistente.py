@@ -109,6 +109,62 @@ def table_query(query):
 
 #************************************************************************************************************************
 
+saldo_function = {
+    "name" : "saldo",
+    "description" : "Devuelve el saldo actual de la cuenta del usuario.",
+    "parameters": {"type": "object", "properties": {}},
+}
+
+bizum_function = {
+    "name" : "bizum",
+    "description" : "Envía dinero a un contacto o número de teléfono mediante Bizum",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "receiver": {"type": "string", "description": "Nombre o número de teléfono del contacto que recibe el dinero"},
+            "amount": {"type": "number", "description": "Cantidad en euros a enviar"},
+        },
+        "required": ["receiver", "amount"],
+    },
+}
+
+tools = types.Tool(function_declarations=[saldo_function, bizum_function])
+config = types.GenerateContentConfig(tools=[tools])
+
+def check_balance():
+    try:
+        cursor.execute("SELECT SUM(importe) FROM transaccion")
+        balance = cursor.fetchone()
+        if balance is None:
+            return None
+        
+        return float(balance[0])
+    
+    except sqlite3.Error:
+        return None
+
+def send_bizum(receiver, amount):
+    balance = check_balance()
+    if balance is None or amount <= 0 or amount > balance:
+        return None
+    
+    try:
+        w_connection = sqlite3.connect("movimientos.db")
+        w_cursor = w_connection.cursor()
+
+        w_cursor.execute("INSERT INTO transaccion (fecha, importe, concepto, categoria) VALUES (?, ?, ?, ?)",
+                          (today, -amount, f"Bizum a {receiver}", "Otros"))
+        
+        w_connection.commit()
+        w_connection.close()
+
+        return f"BIZUM -> Destinatario:{receiver}, Cantidad:{amount}"
+
+    except sqlite3.Error:
+        w_connection.close()
+        return None
+#************************************************************************************************************************
+
 load_dotenv()
 
 client = genai.Client()
