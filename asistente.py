@@ -27,7 +27,8 @@ Tu tarea es traducir la pregunta del usuario a una consulta SQL de SQLite.
 Mapea los términos del usuario a la categoría más adecuada de la lista, por ejemplo si la pregunta es 'Cuánto gasté
 en gasolina?', la categoría sería 'Transporte'.
 Si el usuario pregunta por conceptos que no son categorías (suscripciones, gasolina, farmacia...), filtra 
-por concepto LIKE en lugar de por categoría.
+por concepto LIKE en lugar de por categoría, y además, deberás buscar en el concepto por ejemplo para gasolina busca REPSOL, CEPSA, BP...
+O para suscripciones busca NETFLIX, SPOTIFY, HBO... Prueba con empresas famosas.
 El formato de salida que deberás darme es solo la consulta SQL, sin nada de texto adicional, sin bloques de markdown, sin ```.
 El esquema de la base de datos sobre la cuál vas a tener que crear la consulta es:
 CREATE TABLE IF NOT EXISTS transaccion(
