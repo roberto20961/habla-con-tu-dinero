@@ -101,6 +101,11 @@ def valid_query(query):
     query = query.lower()
     return query.startswith("select") and query.rstrip(";").count(";") == 0
 
+# Checks whether the query accesses the transaction table
+def table_query(query):
+    query = query.lower()
+    return "from transaccion" in query
+
 #************************************************************************************************************************
 
 load_dotenv()
@@ -163,6 +168,11 @@ while True:
         
         if not valid_query(query):
             response = "Consulta no válida, inténtelo de nuevo."
+
+        # If the query does not access the transaction table, we redirect the conversation
+        elif not table_query(query):
+            classification = "Charla"
+
         else:
             try:
                 cursor.execute(query)
@@ -192,7 +202,7 @@ while True:
             except sqlite3.Error as e:
                 response = f"Error en la base de datos: {e} \n Por favor, vuelve a intentarlo..."
 
-    else:
+    if classification == "Charla":
         response = gemini_call(history + [prompt], SYSTEM_PROMPT)
 
         # If the server is overloaded and has not responded, the user should try again
