@@ -39,6 +39,11 @@ concepto TEXT,
 categoria TEXT CHECK(categoria IN ('Ocio', 'Restaurantes', 'Supers e Hipers', 'Salud', 'Bienestar y Belleza', 
 'Transporte', 'Hogar', 'Donaciones', 'Educación', 'Ropa y calzado', 
 'Electrónica y Electrodomésticos', 'Otros', 'Ingresos')))
+Los gastos se guardan como importes NEGATIVOS y los ingresos como POSITIVOS.
+Por tanto, para ordenar o comparar cuánto se ha gastado, ten en cuenta el signo:
+usa ABS(SUM(importe)) o SUM(importe) ASC para encontrar el gasto MAYOR.
+Ejemplo: la categoría donde más se gasta es SELECT categoria FROM transaccion
+WHERE categoria != 'Ingresos' GROUP BY categoria ORDER BY SUM(importe) ASC LIMIT 1.
 Como información adicional te digo que la fecha de hoy es {today}.
 """ 
 
