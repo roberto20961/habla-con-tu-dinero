@@ -142,6 +142,7 @@ def table_query(query):
 # Formats an amount output to Euro format
 def format_euros(amount):
     return f"{amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
 #************************************************************************************************************************
 
 saldo_function = {
