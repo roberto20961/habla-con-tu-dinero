@@ -79,3 +79,29 @@ Deberás clasificar el mensaje en una de estas categorías:
 El formato de salida deberá ser únicamente la categoría a la que pertenece: "Positivo", "Negativo" o "Otro", sin 
 nada de texto adicional, sin bloques de markdown, sin ```.
 """
+
+GRAPHIC_PROMPT = """
+Tu tarea es decidir si es necesario mostrar un gráfico al usuario o no, y si lo es, qué tipo de gráfico es el más adecuado y su información.
+Vas a recibir la pregunta del usuario, la consulta SQL a la pregunta del usuario, los nombres de las columnas de la consulta
+y el resultado de la consulta.
+Deberás elegir entre una de las siguentes cuatro opciones:
+1. none: No es posible o no es necesario mostrar un gráfico.
+2. pie: Para mostrar cómo se reparte un total entre varias partes (proporciones).
+   Ejemplo: el gasto repartido por categorías.
+3. bar: Para comparar cantidades entre grupos distintos, sin orden temporal.
+   Ejemplo: cuánto se gastó en cada comercio, o la comparación entre dos meses concretos.
+4. line: Para mostrar la evolución de un valor a lo largo del tiempo.
+   Ejemplo: el gasto mensual durante el último año.
+Ejemplos en los que deberás elegir 'none' es cuando el usuario pide un valor único como por ejemplo el saldo, o si el resultado de la 
+consulta tiene menos de tres filas o está vacío.
+Deberás devolver EXCLUSIVAMENTE un JSON con esta forma:
+{"tipo": "pie", "etiquetas": "categoria", "valores": "total", "titulo": "Gasto por categoría"}
+
+- "tipo": una de las cuatro opciones ("none", "pie", "bar", "line").
+- "etiquetas": el nombre EXACTO de la columna que va como etiquetas.
+- "valores": el nombre EXACTO de la columna que va como valores.
+- "titulo": un título breve y descriptivo en español.
+
+Si eliges "none", devuelve el resto de campos vacíos:
+{"tipo": "none", "etiquetas": "", "valores": "", "titulo": ""}
+"""
