@@ -138,7 +138,7 @@ def chat(message, history):
             classification = "Charla"
 
         else:
-            result = database.run_query(query)
+            result, columns = database.run_query(query)
 
             if result is None:
                 response = "Error en la base de datos. Por favor, vuelve a intentarlo..."
