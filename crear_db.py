@@ -5,8 +5,10 @@ from google import genai
 from google.genai import errors
 from google.genai import types
 import time
+from datetime import date
 
-GENERATION_PROMPT = """
+today = date.today().isoformat() # Today's date
+GENERATION_PROMPT = f"""
 Genera 400 transacciones bancarias realistas de un cliente español normal.
 
 Devuelve EXCLUSIVAMENTE un array JSON, sin texto antes ni después, sin markdown.
@@ -19,7 +21,7 @@ El formato es una lista de objetos, cada uno con exactamente estos campos:
 
 Reglas:
 - No incluyas el campo id (se autogenera en la base de datos).
-- Las fechas van entre 2025-01-01 y 2026-07-19, en formato AAAA-MM-DD.
+- Las fechas van entre 2025-01-01 y {today}, en formato AAAA-MM-DD.
 - Los gastos son importes NEGATIVOS; los ingresos, POSITIVOS.
 - Solo un ingreso (nómina) por mes; el resto son gastos.
 - El concepto debe ser el nombre real de un comercio o entidad (ej. "MERCADONA", "NETFLIX", "ENDESA ENERGIA"), en mayúsculas.
