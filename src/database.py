@@ -7,13 +7,16 @@ today = date.today().isoformat() # Today's date
 def run_query(query):
     try:
         with sqlite3.connect("file:../movimientos.db?mode=ro", uri=True) as ro_connection:
-            return ro_connection.execute(query).fetchall()
+            cursor = ro_connection.execute(query)
+            columns = [col[0] for col in cursor.description] # Add the column names to a list
+            return cursor.fetchall(), columns
+        
     except sqlite3.Error:
-        return None
+        return None, None
 
 # Returns the total balance of the user bank account
 def check_balance():
-    balance = run_query("SELECT SUM(importe) FROM transaccion")
+    balance, columns = run_query("SELECT SUM(importe) FROM transaccion")
     if balance is None or balance[0][0] is None:
         return None
     
