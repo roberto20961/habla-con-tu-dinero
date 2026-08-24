@@ -31,7 +31,7 @@ bizum_function = {
 tools = types.Tool(function_declarations=[saldo_function, bizum_function])
 
 # Allows making Gemini calls with history or simple prompt, system instructions and exponential backoff
-def gemini_call(prompt, system_prompt = None, max_retries = 3):
+def gemini_call(prompt, system_prompt = None, max_retries = 3, mime_type = None):
     wait = 2
 
     for i in range(max_retries):
@@ -40,7 +40,8 @@ def gemini_call(prompt, system_prompt = None, max_retries = 3):
                 model = "gemini-3.1-flash-lite",
                 contents = prompt,
                 config = types.GenerateContentConfig(
-                    system_instruction = system_prompt
+                    system_instruction = system_prompt,
+                    response_mime_type = mime_type
                 )
             )
 
@@ -69,6 +70,9 @@ def query_translate(prompt):
 
 def bizum_approval(prompt):
     return gemini_call(prompt, prompts.BIZUM_PROMPT)
+
+def graphic_call(prompt):
+    return gemini_call(prompt, prompts.GRAPHIC_PROMPT, mime_type = "application/json")
 
 # Same logic as 'gemini_call' but oriented to Bizum operations
 def operation_call(prompt, max_retries = 3):
