@@ -1,7 +1,7 @@
 import plotly.express as px
 
 def build_plot(plot_info, data, columns):
-    if plot_info["tipo"] == "none":
+    if plot_info["tipo"] == "none" or not data:
         return None
 
     else:
