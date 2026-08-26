@@ -2,6 +2,9 @@ import textwrap
 import llm
 import database
 import prompts
+import charts
+import json
+import gradio as gr
 
 state = {
     "history_sql": [],
@@ -156,12 +159,28 @@ def chat(message, history):
                 if response is None:
                     return "Servidor saturado... Intente nuevamente en unos instantes."
 
+                graph_prompt = query_prompt + f"\n Nombres de las columnas: {columns}"
+                graph_response = llm.graphic_call(graph_prompt)
+
+                if graph_response is not None:
+                    graph_info = json.loads(graph_response)
+                    figure = charts.build_plot(graph_info, result, columns)
+
                 state["history_sql"].append(prompt)
 
                 state["history_sql"].append({
                     "role": "model",
                     "parts": [{"text": query}]
                 })
+
+                if figure is not None:
+                    return [
+                        {"role": "assistant", "content": response},
+                        {"role": "assistant", "content": gr.Plot(figure)},
+                    ]
+                else:
+                    return response
+
 
     if classification != "Consulta" and classification != "Operation":
         response = llm.gemini_call(to_gemini_history(history) + [prompt], prompts.SYSTEM_PROMPT)

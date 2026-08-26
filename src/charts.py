@@ -16,15 +16,16 @@ def build_plot(plot_info, data, columns):
             return None
 
         if plot_info["tipo"] == "pie":
-            fig = px.pie(names = tags, values = tag_values, title = plot_info["titulo"])
+            fig = px.pie(names=tags, values=tag_values, title=plot_info["titulo"])
 
         elif plot_info["tipo"] == "bar":
-            fig = px.bar(x = tags, y = tag_values, title = plot_info["titulo"])
+            fig = px.bar(x=tags, y=tag_values, title=plot_info["titulo"], labels={"x": plot_info["etiquetas"], "y": plot_info["valores"]})
 
         elif plot_info["tipo"] == "line":
-            fig = px.line(x = tags, y = tag_values, title = plot_info["titulo"])
+            fig = px.line(x=tags, y=tag_values, title=plot_info["titulo"], labels={"x": plot_info["etiquetas"], "y": plot_info["valores"]})
         
         else:
             return None
 
+    fig.update_layout(modebar_remove=["zoom", "pan", "select", "lasso", "zoomin", "zoomout", "autoscale", "resetScale"])
     return fig

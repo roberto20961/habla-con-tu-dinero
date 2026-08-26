@@ -82,8 +82,8 @@ nada de texto adicional, sin bloques de markdown, sin ```.
 
 GRAPHIC_PROMPT = """
 Tu tarea es decidir si es necesario mostrar un gráfico al usuario o no, y si lo es, qué tipo de gráfico es el más adecuado y su información.
-Vas a recibir la pregunta del usuario, la consulta SQL a la pregunta del usuario, los nombres de las columnas de la consulta
-y el resultado de la consulta.
+Vas a recibir la pregunta del usuario, la consulta SQL a la pregunta del usuario, el resultado de la consulta y
+los nombres de las columnas de la consulta.
 Deberás elegir entre una de las siguentes cuatro opciones:
 1. none: No es posible o no es necesario mostrar un gráfico.
 2. pie: Para mostrar cómo se reparte un total entre varias partes (proporciones).
