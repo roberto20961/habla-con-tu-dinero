@@ -41,14 +41,16 @@ def chat_logic(message, history):
     command = user_msg.lower()
 
     if command == "":
-        return "Ningún mensaje recibido."
+        yield "Ningún mensaje recibido."
+        return
 
     if not state["mid_operation"] and state["pending_bizum"] is None:
         classification = llm.classify(user_msg)
 
         # If the server is overloaded and has not responded, the user should try again
         if classification is None:
-            return "Servidor saturado... Intente nuevamente en unos instantes."
+            yield "Servidor saturado... Intente nuevamente en unos instantes."
+            return
 
         classification = classification.strip()
 
@@ -61,12 +63,15 @@ def chat_logic(message, history):
     }
 
     if classification == "Operation":
+        yield "Preparando la operación..."
+
         if state["pending_bizum"] is not None:
             bizum_response = llm.bizum_approval(user_msg)
 
             # If the server is overloaded and has not responded, the user should try again
             if bizum_response is None:
-                return "Servidor saturado... Intente nuevamente en unos instantes."
+                yield "Servidor saturado... Intente nuevamente en unos instantes."
+                return
     
             bizum_response = bizum_response.strip()
 
@@ -89,7 +94,8 @@ def chat_logic(message, history):
 
             # If the server is overloaded and has not responded, the user should try again
             if operation is None:
-                return "Servidor saturado... Intente nuevamente en unos instantes."
+                yield "Servidor saturado... Intente nuevamente en unos instantes."
+                return
 
             # Name of the function that Gemini decided that should be called
             fc = operation.candidates[0].content.parts[0].function_call
@@ -124,11 +130,14 @@ def chat_logic(message, history):
                     response = "Error en la operación. Por favor, inténtelo nuevamente..."
 
     elif classification == "Consulta":
+        yield "Consultando la base de datos..."
+
         query = llm.sql_translate(state["history_sql"] + [prompt])
 
         # If the server is overloaded and has not responded, the user should try again
         if query is None:
-           return "Servidor saturado... Intente nuevamente en unos instantes."
+           yield "Servidor saturado... Intente nuevamente en unos instantes."
+           return
 
         query = query.strip()
         
@@ -156,11 +165,14 @@ def chat_logic(message, history):
 
                 # If the server is overloaded and has not responded, the user should try again
                 if response is None:
-                    return "Servidor saturado... Intente nuevamente en unos instantes."
+                    yield "Servidor saturado... Intente nuevamente en unos instantes."
+                    return
 
                 figure = None
                 # If the query returns only one row, we don't even ask whether a chart is needed
                 if len(result) > 1:
+                    yield "Analizando los datos..."
+
                     graph_prompt = query_prompt + f"\n Nombres de las columnas: {columns}"
                     graph_response = llm.graphic_call(graph_prompt)
 
@@ -176,12 +188,14 @@ def chat_logic(message, history):
                 })
 
                 if figure is not None:
-                    return [
+                    yield [
                         {"role": "assistant", "content": response},
                         {"role": "assistant", "content": gr.Plot(figure)},
                     ]
+                    return
                 else:
-                    return response
+                    yield response
+                    return
 
 
     if classification != "Consulta" and classification != "Operation":
@@ -189,9 +203,10 @@ def chat_logic(message, history):
 
         # If the server is overloaded and has not responded, the user should try again
         if response is None:
-            return "Servidor saturado... Intente nuevamente en unos instantes."
+            yield "Servidor saturado... Intente nuevamente en unos instantes."
+            return
 
-    return response
+    yield response
 
 def chat(message, history):
     start = time.time()
