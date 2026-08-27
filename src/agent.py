@@ -5,6 +5,7 @@ import prompts
 import charts
 import json
 import gradio as gr
+import time
 
 state = {
     "history_sql": [],
@@ -34,7 +35,7 @@ def to_gemini_history(history):
         })
     return result
 
-def chat(message, history):
+def chat_logic(message, history):
     user_msg = message.strip()
 
     command = user_msg.lower()
@@ -128,8 +129,6 @@ def chat(message, history):
         # If the server is overloaded and has not responded, the user should try again
         if query is None:
            return "Servidor saturado... Intente nuevamente en unos instantes."
-        
-        print(f"[SQL] {query}")
 
         query = query.strip()
         
@@ -159,12 +158,15 @@ def chat(message, history):
                 if response is None:
                     return "Servidor saturado... Intente nuevamente en unos instantes."
 
-                graph_prompt = query_prompt + f"\n Nombres de las columnas: {columns}"
-                graph_response = llm.graphic_call(graph_prompt)
+                figure = None
+                # If the query returns only one row, we don't even ask whether a chart is needed
+                if len(result) > 1:
+                    graph_prompt = query_prompt + f"\n Nombres de las columnas: {columns}"
+                    graph_response = llm.graphic_call(graph_prompt)
 
-                if graph_response is not None:
-                    graph_info = json.loads(graph_response)
-                    figure = charts.build_plot(graph_info, result, columns)
+                    if graph_response is not None:
+                        graph_info = json.loads(graph_response)
+                        figure = charts.build_plot(graph_info, result, columns)
 
                 state["history_sql"].append(prompt)
 
@@ -190,3 +192,9 @@ def chat(message, history):
             return "Servidor saturado... Intente nuevamente en unos instantes."
 
     return response
+
+def chat(message, history):
+    start = time.time()
+    for chunk in chat_logic(message, history):
+        yield chunk
+    print(f"[TIEMPO] {time.time() - start:.2f}s")
