@@ -15,8 +15,8 @@ Devuelve EXCLUSIVAMENTE un array JSON, sin texto antes ni después, sin markdown
 El formato es una lista de objetos, cada uno con exactamente estos campos:
 
 [
-  {"fecha": "2025-03-14", "importe": -48.75, "concepto": "REPSOL E.S. GRANADA", "categoria": "Transporte"},
-  {"fecha": "2025-03-25", "importe": 1850.00, "concepto": "NÓMINA EMPRESA S.L.", "categoria": "Ingresos"}
+  {{"fecha": "2025-03-14", "importe": -48.75, "concepto": "REPSOL E.S. GRANADA", "categoria": "Transporte"}},
+  {{"fecha": "2025-03-25", "importe": 1850.00, "concepto": "NÓMINA EMPRESA S.L.", "categoria": "Ingresos"}}
 ]
 
 Reglas:
