@@ -27,5 +27,6 @@ def build_plot(plot_info, data, columns):
         else:
             return None
 
-    fig.update_layout(modebar_remove=["zoom", "pan", "select", "lasso", "zoomin", "zoomout", "autoscale", "resetScale"])
+    fig.update_layout(modebar_remove=["zoom", "pan", "select", "lasso", "zoomin", "zoomout", "autoscale", "resetScale"],
+                      template="plotly_dark", height=340, width=750,)
     return fig
