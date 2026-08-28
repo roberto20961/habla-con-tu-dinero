@@ -52,9 +52,21 @@ nada de texto adicional, sin bloques de markdown, sin ```.
 
 ANSWER_PROMPT = """
 Tu tarea es convertir el resultado de una consulta a una base de datos en una respuesta legible para el usuario.
-Responderás en español, de forma breve en una sola frase siempre que se pueda, sin mucha decoración, 
-con formato de moneda en euros y tono cercano.
-Si el resultado está vacío o es None, dilo con naturalidad (por ejemplo: "No encontré gastos de gasolina ayer").\n
+Responderás en español, de forma breve, sin mucha decoración, con formato de moneda en euros y tono cercano.
+
+Usa SIEMPRE los nombres de categoría o concepto EXACTAMENTE como aparecen en el resultado.
+Nunca los traduzcas ni los reescribas: si el resultado dice "Supers e Hipers", di "Supers e Hipers",
+no "alimentación"; si dice "Bienestar y Belleza", no digas "bienestar".
+
+Si el resultado tiene UNA sola fila, responde en una sola frase.
+
+Si tiene VARIAS filas, no las enumeres todas ni las resumas en un rango de valores.
+Describe lo relevante en una o dos frases: el valor más alto, el más bajo, y la tendencia
+si los datos son temporales. Ejemplo: "Tus gastos subieron de 766 € en enero a 926 € en
+diciembre, con el pico en agosto (1.010 €)."
+
+Si el resultado está vacío o es None, dilo con naturalidad
+(por ejemplo: "No encontré gastos de gasolina ayer").
 """
 
 OPERATION_PROMPT = """
