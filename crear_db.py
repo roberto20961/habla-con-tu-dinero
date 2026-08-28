@@ -24,6 +24,15 @@ Reglas:
 - Las fechas van entre 2025-01-01 y {today}, en formato AAAA-MM-DD.
 - Los gastos son importes NEGATIVOS; los ingresos, POSITIVOS.
 - Solo un ingreso (nómina) por mes; el resto son gastos.
+- NUNCA repitas el mismo patrón de movimientos entre meses. Cada mes debe tener una
+  combinación distinta de comercios, importes y fechas. Está PROHIBIDO que dos meses
+  sumen el mismo gasto total.
+- Varía los importes: usa céntimos distintos y realistas (por ejemplo -37,45; -12,80; -104,20),
+  no cifras redondas repetidas.
+- El número de movimientos por mes debe variar (algunos meses más, otros menos),
+  igual que en una cuenta real.
+- Las suscripciones recurrentes (NETFLIX, SPOTIFY, la hipoteca, la luz) sí pueden repetir
+  importe cada mes; el resto de gastos no.
 - El concepto debe ser el nombre real de un comercio o entidad (ej. "MERCADONA", "NETFLIX", "ENDESA ENERGIA"), en mayúsculas.
 Nunca uses palabras genéricas como TAXI, CINE, LIBROS, RESTAURANTE, FARMACIA; usa siempre marcas concretas: CABIFY, CINESA, CASA DEL LIBRO...
 El mismo comercio debe escribirse siempre igual.
