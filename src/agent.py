@@ -192,7 +192,6 @@ def chat_logic(message, history):
                     if graph_response is not None:
                         try:
                             graph_info = json.loads(graph_response)
-                            print(graph_info)
                             figure = charts.build_plot(graph_info, result, columns)
 
                         except (json.JSONDecodeError, TypeError):
