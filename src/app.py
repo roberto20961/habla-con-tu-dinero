@@ -6,9 +6,9 @@ gr.ChatInterface(
     title = "Habla con tu dinero",
     description = "Asistente virtual de Unicaja. Consulta tus movimientos, revisa tu saldo y envía Bizums hablando con naturalidad.",
     examples = [
-        "¿Cuánto gasté en gasolina en abril?",
+        "Envía un Bizum.",
         "¿Cuál es el saldo actual de mi cuenta?",
-        "¿Cuánto gasté en cada categoría el mes pasado?",
+        "¿Cuánto gasté en gasolina en abril?",
         "¿Cómo han evolucionado mis gastos el año pasado?",
     ],
     textbox=gr.Textbox(placeholder="Escribe tu mensaje..."),
