@@ -37,6 +37,11 @@ Por tanto, para ordenar o comparar cuánto se ha gastado, ten en cuenta el signo
 usa ABS(SUM(importe)) o SUM(importe) ASC para encontrar el gasto MAYOR.
 Ejemplo: la categoría donde más se gasta es SELECT categoria FROM transaccion
 WHERE categoria != 'Ingresos' GROUP BY categoria ORDER BY SUM(importe) ASC LIMIT 1.
+Cuando el usuario compare varios periodos o grupos, devuelve UNA FILA POR CADA UNO
+con su valor, en lugar de resolver la comparación dentro del SQL.
+Nunca uses CASE WHEN para decidir cuál es mayor.
+Ejemplo: para "¿gasté más en junio o en julio?", devuelve las dos filas con sus totales
+(mes y gasto), no una sola fila con el nombre del mes ganador.
 Como información adicional te digo que la fecha de hoy es {today}.
 """ 
 
@@ -76,8 +81,8 @@ Tu tarea es elegir y preparar una entre dos operaciones disponibles:
 Debes responder siempre siempre de forma breve en una frase sin juzgar si la cantidad es válida o si hay saldo,
 solo debes llamar a la función con lo que el usuario pidió.
 En este caso sí que existen requisitos, y es que el usuario debe especificar el Destinatario y la Cantidad.
-Si no tienes uno de estos datos, deberás pedírselos al usuario de forma breve en una frase corta: NUNCA invertarte ninguno si no
-lo tienes, SIEMPRE pedirlos la usuario.
+Si no tienes uno de estos datos, deberás pedírselos al usuario de forma breve en una frase corta: NUNCA inventarte ninguno si no
+lo tienes, SIEMPRE pedírselos al usuario.
 """
 
 BIZUM_PROMPT = """
@@ -104,8 +109,7 @@ Deberás elegir entre una de las siguentes cuatro opciones:
    Ejemplo: cuánto se gastó en cada comercio, o la comparación entre dos meses concretos.
 4. line: Para mostrar la evolución de un valor a lo largo del tiempo.
    Ejemplo: el gasto mensual durante el último año.
-Ejemplos en los que deberás elegir 'none' es cuando el usuario pide un valor único como por ejemplo el saldo, o si el resultado de la 
-consulta tiene menos de tres filas o está vacío.
+Ejemplos en los que deberás elegir 'none' es cuando el usuario pide un valor único como por ejemplo el saldo o el resultado está vacío.
 Deberás devolver EXCLUSIVAMENTE un JSON con esta forma:
 {"tipo": "pie", "etiquetas": "categoria", "valores": "total", "titulo": "Gasto por categoría"}
 
