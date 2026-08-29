@@ -116,7 +116,7 @@ def chat_logic(message, history):
                 if fc.name == "saldo":
                     balance = database.check_balance()
                     if balance is None:
-                        yield "Error al acceder al saldo de la cuenta. Porfavor, vuelva a intentarlo."
+                        yield "Error al acceder al saldo de la cuenta. Por favor, vuelva a intentarlo."
                         return
                     
                     response = f"El saldo de su cuenta es de {format_euros(balance)}€"
