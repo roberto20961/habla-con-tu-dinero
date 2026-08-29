@@ -114,11 +114,24 @@ def chat_logic(message, history):
 
             else:
                 if fc.name == "saldo":
-                    response = f"El saldo de su cuenta es de {format_euros(database.check_balance())}€"
+                    balance = database.check_balance()
+                    if balance is None:
+                        yield "Error al acceder al saldo de la cuenta. Porfavor, vuelva a intentarlo."
+                        return
+                    
+                    response = f"El saldo de su cuenta es de {format_euros(balance)}€"
 
                 elif fc.name == "bizum":
-                    state["pending_bizum"] = fc.args
-                    response = f"Vas a enviar {format_euros(state['pending_bizum']['amount'])}€ a {state['pending_bizum']['receiver']}. ¿Confirmas?"
+                    args = fc.args
+                    amount = args.get("amount")
+                    receiver = args.get("receiver")
+
+                    if not isinstance(amount, (int, float)) or not receiver:
+                        yield "No he podido procesar el Bizum. Por favor, vuelve a intentarlo."
+                        return
+
+                    state["pending_bizum"] = args
+                    response = f"Vas a enviar {format_euros(amount)}€ a {receiver}. ¿Confirmas?"
 
                     state["history_operation"].append(prompt)
                     state["history_operation"].append({
@@ -177,8 +190,13 @@ def chat_logic(message, history):
                     graph_response = llm.graphic_call(graph_prompt)
 
                     if graph_response is not None:
-                        graph_info = json.loads(graph_response)
-                        figure = charts.build_plot(graph_info, result, columns)
+                        try:
+                            graph_info = json.loads(graph_response)
+                            print(graph_info)
+                            figure = charts.build_plot(graph_info, result, columns)
+
+                        except (json.JSONDecodeError, TypeError):
+                            figure = None
 
                 state["history_sql"].append(prompt)
 
