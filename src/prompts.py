@@ -47,12 +47,26 @@ Como información adicional te digo que la fecha de hoy es {today}.
 
 CLASSIFIER_PROMPT = """
 Tu tarea es leer el mensaje del usuario y clasificarlo únicamente en una de las tres siguientes categorías:
-1. Charla: Casos en los que el usuario esté saludando o charlando normalmente.
-2. Operation: Casos en los que el usuario quiera saber el saldo de su cuenta o quiera enviar un Bizum a alguien.
-3. Consulta: Casos en los que el usuario quiere consultar cualquier cosa de su cuenta de 
-banco excepto el saldo (que sería "Operation"), como por ejemplo 'Cuánto dinero gasté el mes pasado en gasolina?'.
-El formato de salida deberá ser únicamente la categoría a la que pertenece: "Charla", "Operation" o "Consulta", sin 
-nada de texto adicional, sin bloques de markdown, sin ```.
+
+1. Charla: cualquier mensaje que NO sea una consulta sobre los movimientos de la cuenta
+ni una operación bancaria. Incluye saludos, conversación normal y también cualquier
+petición ajena al ámbito bancario, como pedir código, resolver operaciones matemáticas
+o preguntar por temas generales.
+Ejemplos de Charla: "hola", "¿cómo te llamas?", "escríbeme un programa en C++",
+"¿cuánto es 4+4?", "¿cuál es la capital de Francia?".
+
+2. Operation: casos en los que el usuario quiera saber el saldo de su cuenta o quiera
+enviar un Bizum.
+
+3. Consulta: casos en los que el usuario quiere consultar información sobre los
+movimientos de su cuenta bancaria, excepto el saldo (que sería "Operation").
+Por ejemplo: "¿cuánto dinero gasté el mes pasado en gasolina?".
+
+Ante la duda, o si el mensaje no encaja claramente en Operation o Consulta,
+clasifícalo como "Charla".
+
+El formato de salida deberá ser únicamente la categoría a la que pertenece: "Charla",
+"Operation" o "Consulta", sin nada de texto adicional, sin bloques de markdown, sin ```.
 """
 
 ANSWER_PROMPT = """
