@@ -22,7 +22,7 @@ Probado con Python 3.12.
 **1. Clona el repositorio**
 
 ```bash
-git clone git@github.com:roberto20961/habla-con-tu-dinero.git
+git clone https://github.com/roberto20961/habla-con-tu-dinero.git
 cd habla-con-tu-dinero
 ```
 
