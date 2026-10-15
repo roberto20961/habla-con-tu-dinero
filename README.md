@@ -80,6 +80,8 @@ habla-con-tu-dinero/
     └── prompts.py      # Instrucciones de cada llamada al modelo
 ```
 
+La memoria técnica del proyecto está disponible en [docs/memoria.pdf](docs/memoria.pdf).
+
 ## Notas
 
 - Los movimientos son **ficticios**, generados con un LLM. No hay datos reales de ninguna persona.
