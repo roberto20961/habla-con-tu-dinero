@@ -80,7 +80,7 @@ habla-con-tu-dinero/
     └── prompts.py      # Instrucciones de cada llamada al modelo
 ```
 
-La memoria técnica del proyecto está disponible en [docs/memoria.pdf](docs/memoria.pdf).
+La memoria técnica del proyecto está disponible en [doc/memoria.pdf](doc/memoria.pdf).
 
 ## Notas
 
